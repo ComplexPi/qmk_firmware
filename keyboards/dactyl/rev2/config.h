@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // wiring of each half
 #define MATRIX_ROW_PINS { D3, D2, B3, B1, F7, D3, D2, B3, B1, F7 }
 #define MATRIX_COL_PINS { B5, B4, E6, D7, C6, D4, B6, B2 }
-// #define MATRIX_COL_PINS { B6, B2, B3, B1, F7, F6 } //uncomment this line and comment line above if you need to reverse left-to-right key order
 
 #define CATERINA_BOOTLOADER
 

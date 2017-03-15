@@ -45,10 +45,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define ERROR_DISCONNECT_COUNT 5
 
-
-
-
-
 #if (DEBOUNCING_DELAY > 0)
     static uint16_t debouncing_time;
     static bool debouncing = false;
@@ -166,6 +162,11 @@ uint8_t matrix_cols(void) {
 // }
 
 void matrix_init(void) {
+	debug_enable=true;
+	debug_matrix = true;
+	debug_mouse = true;
+
+    TX_RX_LED_INIT;
 
     // To use PORTF disable JTAG with writing JTD bit twice within four cycles.
     #if  (defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB1287__) || defined(__AVR_ATmega32U4__))
@@ -263,13 +264,8 @@ bool matrix_is_on(uint8_t row, uint8_t col)
 inline
 matrix_row_t matrix_get_row(uint8_t row)
 {
-    // Matrix mask lets you disable switches in the returned matrix data. For example, if you have a
-    // switch blocker installed and the switch is always pressed.
-#ifdef MATRIX_MASKED
-    return matrix[row] & matrix_mask[row];
-#else
+	// Removed matrix mask for ghosting for debugging reasons
     return matrix[row];
-#endif
 }
 
 void matrix_print(void)
@@ -377,7 +373,7 @@ static bool read_rows_on_col(matrix_row_t current_matrix[], uint8_t current_col,
     wait_us(30);
 
     // For each row...
-    for(uint8_t row_index = offset; row_index < (ROWS_PER_HAND + offset); row_index++)
+    for(uint8_t row_index = offset; row_index < (ROWS_PER_HAND + offset); ++row_index)
     {
 
         // Store last value of row prior to reading
@@ -452,10 +448,13 @@ int i2c_transaction(void) {
 
     if (!err) {
         int i;
-        for (i = 0; i < MATRIX_COLS-1; ++i) {
+        for (i = 0; i < ROWS_PER_HAND-1; ++i) {
             matrix[slaveOffset+i] = i2c_master_read(I2C_ACK);
+	    int temp = matrix[slaveOffset+i];
+	    print_val_hex16(temp);
         }
         matrix[slaveOffset+i] = i2c_master_read(I2C_NACK);
+	print("i2c read\n");
         i2c_master_stop();
     } else {
 i2c_error: // the cable is disconnceted, or something else went wrong
@@ -469,12 +468,14 @@ i2c_error: // the cable is disconnceted, or something else went wrong
 #else // USE_SERIAL
 
 int serial_transaction(void) {
+    int slaveOffset = (isLeftHand) ? (ROWS_PER_HAND) : 0;
+
     if (serial_update_buffers()) {
         return 1;
     }
 
-    for (int i = 0; i < MATRIX_COLS; ++i) {
-        matrix[i] = serial_slave_buffer[i];
+    for (int i = 0; i < ROWS_PER_HAND; ++i) {
+        matrix[slaveOffset+i] = serial_slave_buffer[i];
     }
     return 0;
 }
@@ -492,16 +493,17 @@ uint8_t matrix_scan(void)
         // turn on the indicator led when halves are disconnected
         TXLED1;
 
-/*        error_count++;
-*
-*	 //This is a big hack, need to add COL2ROW support
-*        if (error_count > ERROR_DISCONNECT_COUNT) {
-*            // reset other half if disconnected
-*            for (int i = 0; i < MATRIX_COLS; ++i) {
-*                matrix[i] = 0;
-*            }
-*        }
-*/
+        error_count++;
+
+        if (error_count > ERROR_DISCONNECT_COUNT) {
+            // reset other half if disconnected
+	    int slaveOffset = (isLeftHand) ? (ROWS_PER_HAND) : 0;
+
+            for (int i = 0; i < ROWS_PER_HAND; ++i) {
+                matrix[slaveOffset+i] = 0;
+            }
+        }
+
     } else {
         // turn off the indicator led on no error
         TXLED0;
@@ -513,7 +515,6 @@ uint8_t matrix_scan(void)
     return ret;
 }
 
-/* This function is a hack, it needs to be cleaned up */
 void matrix_slave_scan(void) {
     _matrix_scan();
 

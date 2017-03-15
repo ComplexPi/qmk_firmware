@@ -14,6 +14,7 @@ endif
 ifdef SILENT
     SUB_IS_SILENT := $(SILENT)
 endif
+CONSOLE_ENABLE=yes
 
 # We need to make sure that silent is always turned off at the top level
 # Otherwise the [OK], [ERROR] and [WARN] messages won't be displayed correctly
