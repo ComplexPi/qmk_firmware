@@ -10,16 +10,14 @@ void matrix_init_kb(void) {
     TCCR1B = 0b00001001;  // set and configure fast PWM
 
     // (tied to Vcc for hardware convenience)
-    DDRB  &= ~(1<<4);  // set B(4) as input
-    PORTB &= ~(1<<4);  // set B(4) internal pull-up disabled
+    //DDRB  &= ~(1<<4);  // set B(4) as input
+    //PORTB &= ~(1<<4);  // set B(4) internal pull-up disabled
 
-    // unused pins - C7, D4, D5, D7, E6
+    // unused pins - D4, D7, E6
     // set as input with internal pull-ip enabled
-    DDRC  &= ~(1<<7);
-    DDRD  &= ~(1<<5 | 1<<4);
+    DDRD  &= ~(1<<4 | 1<<7);
     DDRE  &= ~(1<<6);
-    PORTC |=  (1<<7);
-    PORTD |=  (1<<5 | 1<<4);
+    PORTD |=  (1<<4 | 1<<7);
     PORTE |=  (1<<6);
 
     ergodox_blink_all_leds();

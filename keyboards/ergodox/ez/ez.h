@@ -35,14 +35,14 @@ uint8_t ergodox_left_leds_update(void);
 
 
 inline void ergodox_board_led_on(void)      { DDRD |=  (1<<6); PORTD |=  (1<<6); }
-inline void ergodox_right_led_1_on(void)    { DDRB |=  (1<<5); PORTB |=  (1<<5); }
-inline void ergodox_right_led_2_on(void)    { DDRB |=  (1<<6); PORTB |=  (1<<6); }
+inline void ergodox_right_led_1_on(void)    { DDRD |=  (1<<5); PORTD |=  (1<<5); }
+inline void ergodox_right_led_2_on(void)    { DDRB |=  (1<<0); PORTB |=  (1<<0); }
 inline void ergodox_right_led_3_on(void)    { DDRB |=  (1<<7); PORTB |=  (1<<7); }
 inline void ergodox_right_led_on(uint8_t led) { DDRB |= (1<<(led+4)); PORTB |= (1<<(led+4)); }
 
 inline void ergodox_board_led_off(void)     { DDRD &= ~(1<<6); PORTD &= ~(1<<6); }
-inline void ergodox_right_led_1_off(void)   { DDRB &= ~(1<<5); PORTB &= ~(1<<5); }
-inline void ergodox_right_led_2_off(void)   { DDRB &= ~(1<<6); PORTB &= ~(1<<6); }
+inline void ergodox_right_led_1_off(void)   { DDRD &= ~(1<<5); PORTD &= ~(1<<5); }
+inline void ergodox_right_led_2_off(void)   { DDRB &= ~(1<<0); PORTB &= ~(1<<0); }
 inline void ergodox_right_led_3_off(void)   { DDRB &= ~(1<<7); PORTB &= ~(1<<7); }
 inline void ergodox_right_led_off(uint8_t led) { DDRB &= ~(1<<(led+4)); PORTB &= ~(1<<(led+4)); }
 
